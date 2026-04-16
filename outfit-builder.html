@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outfit Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="outfit-builder.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+    </div>
+
+    <div class="container">
+        <!-- Left Canvas Area -->
+        <div class="canvas-area">
+            <div class="mannequin-container">
+                <div class="mannequin">
+                    <img src="https://www.figma.com/api/mcp/asset/49e08cb1-0422-4134-89e6-c6f1eb1c584f" alt="Mannequin">
+                </div>
+                <div id="outfit-canvas"></div>
+
+                <div class="instructions" id="instructions">
+                    <button class="close-instructions" onclick="this.parentElement.style.display='none'">×</button>
+                    <h4>How to Use</h4>
+                    <ul>
+                        <li>Drag items from the right panel onto the canvas</li>
+                        <li>Click an item to select it</li>
+                        <li>Drag corners to resize</li>
+                        <li>Use the top circle to rotate</li>
+                        <li>Press Delete or click × to remove</li>
+                        <li>Click outside items to deselect</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button class="clear-canvas-btn" onclick="clearCanvas()">Clear Canvas</button>
+        </div>
+
+        <!-- Right Clothing Panel -->
+        <div class="clothing-panel">
+            <div class="tab-nav">
+                <button class="tab-btn active" data-category="tops">Tops</button>
+                <button class="tab-btn" data-category="bottoms">Bottoms</button>
+                <button class="tab-btn" data-category="shoes">Shoes</button>
+                <button class="tab-btn" data-category="acc">Accessories</button>
+            </div>
+
+            <!-- Color Filter -->
+            <div class="color-filter">
+                <h3>Filter by Color</h3>
+                <div class="color-swatches">
+                    <div class="color-swatch active" data-color="all">
+                        <div class="swatch all"></div>
+                        <span>All</span>
+                    </div>
+                    <div class="color-swatch" data-color="red">
+                        <div class="swatch red"></div>
+                        <span>Red</span>
+                    </div>
+                    <div class="color-swatch" data-color="pink">
+                        <div class="swatch pink"></div>
+                        <span>Pink</span>
+                    </div>
+                    <div class="color-swatch" data-color="blue">
+                        <div class="swatch blue"></div>
+                        <span>Blue</span>
+                    </div>
+                    <div class="color-swatch" data-color="green">
+                        <div class="swatch green"></div>
+                        <span>Green</span>
+                    </div>
+                    <div class="color-swatch" data-color="yellow">
+                        <div class="swatch yellow"></div>
+                        <span>Yellow</span>
+                    </div>
+                    <div class="color-swatch" data-color="purple">
+                        <div class="swatch purple"></div>
+                        <span>Purple</span>
+                    </div>
+                    <div class="color-swatch" data-color="black">
+                        <div class="swatch black"></div>
+                        <span>Black</span>
+                    </div>
+                    <div class="color-swatch" data-color="white">
+                        <div class="swatch white"></div>
+                        <span>White</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clothing-grid-container">
+                <div class="clothing-grid" id="clothing-grid">
+                    <!-- Items will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="add-btn-container">
+                <button class="add-btn" onclick="document.getElementById('image-upload').click()">+</button>
+            </div>
+        </div>
+
+        <!-- AI Style Panel -->
+        <div class="ai-panel">
+            <div class="ai-header">
+                <h3>AI Style Assistant</h3>
+            </div>
+            <div class="ai-input-section">
+                <input type="text" id="style-prompt" placeholder="e.g. streetwear winter, soft girl aesthetic..." />
+                <button id="generate-btn" onclick="generateOutfitSuggestion()">Generate Outfit</button>
+            </div>
+            <div class="ai-response-container">
+                <div id="ai-response" class="ai-response">
+                    <p class="ai-placeholder">Enter a style prompt and click "Generate Outfit" to get AI suggestions.</p>
+                </div>
+            </div>
+            <div class="cache-controls">
+                <button id="view-cache-btn" onclick="toggleCacheView()">View Cache</button>
+                <button id="clear-cache-btn" onclick="clearAICache()">Clear Cache</button>
+            </div>
+            <div id="cache-list" class="cache-list" style="display: none;">
+                <h4>Cached Prompts</h4>
+                <div id="cache-items"></div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload(event)">
+
+    <script src="outfit-builder.js"></script>
+</body>
+
+</html>
