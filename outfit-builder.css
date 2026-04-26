@@ -230,12 +230,20 @@ body {
     background: #e01a4a;
 }
 
-/* Clear Canvas Button */
-.clear-canvas-btn {
+/* Canvas Action Buttons */
+.canvas-actions {
+    display: flex;
+    gap: 10px;
     margin-top: 16px;
-    padding: 12px 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.save-outfit-btn,
+.view-outfits-btn,
+.clear-canvas-btn {
+    padding: 12px 20px;
     background: rgba(255, 255, 255, 0.9);
-    color: #ff2056;
     border: 2px solid #fce7f3;
     border-radius: 14px;
     font-family: 'Inter', sans-serif;
@@ -246,9 +254,256 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+.save-outfit-btn {
+    background: linear-gradient(135deg, #f6339a 0%, #ff2056 100%);
+    color: white;
+    border: none;
+}
+
+.save-outfit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(246, 51, 154, 0.4);
+}
+
+.view-outfits-btn {
+    color: #f6339a;
+}
+
+.view-outfits-btn:hover {
+    background: #fff1f2;
+    border-color: #f6339a;
+}
+
+.clear-canvas-btn {
+    color: #ff2056;
+}
+
 .clear-canvas-btn:hover {
     background: #fff1f2;
     border-color: #f6339a;
+}
+
+/* Saved Outfits Panel */
+.saved-outfits-panel {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 380px;
+    max-height: 500px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    z-index: 100;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.saved-outfits-panel.active {
+    display: flex;
+}
+
+.saved-outfits-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #f6339a 0%, #ff2056 100%);
+}
+
+.saved-outfits-header h3 {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-panel-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 20px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.close-panel-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.saved-outfits-grid {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.saved-outfit-card {
+    background: #fdf2f8;
+    border: 1.6px solid #fce7f3;
+    border-radius: 14px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.saved-outfit-card:hover {
+    border-color: #f6339a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(246, 51, 154, 0.15);
+}
+
+.saved-outfit-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.saved-outfit-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #364153;
+}
+
+.saved-outfit-date {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.saved-outfit-preview {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.saved-outfit-preview img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #fce7f3;
+}
+
+.saved-outfit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.outfit-load-btn,
+.outfit-delete-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.outfit-load-btn {
+    background: linear-gradient(135deg, #f6339a 0%, #ff2056 100%);
+    color: white;
+    border: none;
+}
+
+.outfit-load-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(246, 51, 154, 0.3);
+}
+
+.outfit-delete-btn {
+    background: white;
+    color: #ff2056;
+    border: 1.6px solid #fce7f3;
+}
+
+.outfit-delete-btn:hover {
+    background: #fff1f2;
+    border-color: #ff2056;
+}
+
+.no-outfits-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+/* Save Outfit Modal Additions */
+#save-outfit-modal .modal-body label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #364153;
+    margin-bottom: 8px;
+}
+
+#save-outfit-modal .modal-body input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.6px solid #fce7f3;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+}
+
+#save-outfit-modal .modal-body input[type="text"]:focus {
+    border-color: #f6339a;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-cancel-btn,
+.modal-save-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-cancel-btn {
+    background: white;
+    color: #364153;
+    border: 1.6px solid #fce7f3;
+}
+
+.modal-cancel-btn:hover {
+    background: #f9fafb;
+    border-color: #d1d5dc;
+}
+
+.modal-save-btn {
+    background: linear-gradient(135deg, #f6339a 0%, #ff2056 100%);
+    color: white;
+    border: none;
+}
+
+.modal-save-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(246, 51, 154, 0.3);
 }
 
 /* Right Clothing Panel */
@@ -325,7 +580,7 @@ body {
 
 .color-swatches {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
@@ -398,6 +653,14 @@ body {
 .swatch.white {
     background: #ffffff;
     border: 1px solid #e5e7eb;
+}
+
+.swatch.silver {
+    background: linear-gradient(135deg, #e8e8e8 0%, #b8b8b8 50%, #d4d4d4 100%);
+}
+
+.swatch.gold {
+    background: linear-gradient(135deg, #f7e07d 0%, #c9a227 50%, #e6c84a 100%);
 }
 
 /* Clothing Grid */
@@ -658,7 +921,9 @@ body {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .ai-response .cached-badge {
@@ -748,4 +1013,258 @@ body {
     color: #9ca3af;
     font-size: 13px;
     font-style: italic;
+}
+
+/* Color Edit Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 340px;
+    max-width: 90vw;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalSlideIn 0.2s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid #fce7f3;
+}
+
+.modal-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #364153;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #9ca3af;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #ff2056;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body p {
+    font-size: 14px;
+    color: #6a7282;
+    margin: 0 0 16px 0;
+}
+
+.modal-color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.modal-color-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fdf2f8;
+}
+
+.modal-color-option:hover {
+    border-color: #fce7f3;
+    background: #fff1f2;
+}
+
+.modal-color-option.selected {
+    border-color: #f6339a;
+    background: #fff1f2;
+}
+
+.modal-swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-swatch.none {
+    background: linear-gradient(135deg, #f3f4f6 45%, transparent 45%, transparent 55%, #f3f4f6 55%);
+    border: 2px dashed #d1d5dc;
+    box-shadow: none;
+}
+
+.modal-swatch.red {
+    background: #fb2c36;
+}
+
+.modal-swatch.pink {
+    background: #f6339a;
+}
+
+.modal-swatch.blue {
+    background: #2b7fff;
+}
+
+.modal-swatch.green {
+    background: #00bc7d;
+}
+
+.modal-swatch.yellow {
+    background: #f0b100;
+}
+
+.modal-swatch.purple {
+    background: #ad46ff;
+}
+
+.modal-swatch.black {
+    background: #1e2939;
+}
+
+.modal-swatch.white {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+}
+
+.modal-swatch.silver {
+    background: linear-gradient(135deg, #e8e8e8 0%, #b8b8b8 50%, #d4d4d4 100%);
+}
+
+.modal-swatch.gold {
+    background: linear-gradient(135deg, #f7e07d 0%, #c9a227 50%, #e6c84a 100%);
+}
+
+.modal-color-option span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #364153;
+}
+
+/* Clothing Item Color Indicator */
+.clothing-item {
+    position: relative;
+}
+
+.clothing-item .color-indicator {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 5;
+}
+
+.clothing-item .color-indicator.red {
+    background: #fb2c36;
+}
+
+.clothing-item .color-indicator.pink {
+    background: #f6339a;
+}
+
+.clothing-item .color-indicator.blue {
+    background: #2b7fff;
+}
+
+.clothing-item .color-indicator.green {
+    background: #00bc7d;
+}
+
+.clothing-item .color-indicator.yellow {
+    background: #f0b100;
+}
+
+.clothing-item .color-indicator.purple {
+    background: #ad46ff;
+}
+
+.clothing-item .color-indicator.black {
+    background: #1e2939;
+}
+
+.clothing-item .color-indicator.white {
+    background: #ffffff;
+    border-color: #e5e7eb;
+}
+
+.clothing-item .color-indicator.silver {
+    background: linear-gradient(135deg, #e8e8e8 0%, #b8b8b8 50%, #d4d4d4 100%);
+}
+
+.clothing-item .color-indicator.gold {
+    background: linear-gradient(135deg, #f7e07d 0%, #c9a227 50%, #e6c84a 100%);
+}
+
+.clothing-item .edit-color-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.6px solid #fce7f3;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s, background 0.2s;
+    z-index: 5;
+    font-size: 12px;
+}
+
+.clothing-item:hover .edit-color-btn {
+    opacity: 1;
+}
+
+.clothing-item .edit-color-btn:hover {
+    background: #fff1f2;
+    border-color: #f6339a;
 }

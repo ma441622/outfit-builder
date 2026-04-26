@@ -1,8 +1,9 @@
 const DB_NAME = "OutfitBuilderDB";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 const CANVAS_STORE = "canvasItems";
 const CLOTHING_STORE = "clothingData";
+const OUTFITS_STORE = "savedOutfits";
 
 let db;
 
@@ -22,6 +23,10 @@ function initDB() {
 
             if (!database.objectStoreNames.contains(CLOTHING_STORE)) {
                 database.createObjectStore(CLOTHING_STORE, { keyPath: "category" });
+            }
+
+            if (!database.objectStoreNames.contains(OUTFITS_STORE)) {
+                database.createObjectStore(OUTFITS_STORE, { keyPath: "id" });
             }
         };
 
@@ -51,6 +56,12 @@ let selectedItem = null;
 
 // IMPORTANT FIX: stable drag object
 let dragItem = null;
+
+// Color modal state
+let editingItemId = null;
+
+// Saved outfits state
+let savedOutfits = [];
 
 // interaction state
 let isDragging = false;
@@ -138,6 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         await initDB();
         loadCanvas();
         loadClothing();
+        loadSavedOutfits();
     } catch (err) {
         console.error("IndexedDB init failed:", err);
     }
@@ -192,25 +204,31 @@ function renderClothingGrid() {
 
     let items = clothingData[currentCategory] || [];
 
-    // simple filter (based on name since you don't store color metadata)
+    // Get all items with their original indices for filtering
+    let itemsWithIndices = items.map((item, index) => ({ item, originalIndex: index }));
+
+    // Filter by assigned color property
     if (currentFilter !== "all") {
-        items = items.filter(i =>
-            (i.name || "").toLowerCase().includes(currentFilter)
+        itemsWithIndices = itemsWithIndices.filter(({ item }) =>
+            item.color === currentFilter
         );
     }
 
     // Store images in a map to avoid huge data attributes
     const imageMap = new Map();
-    items.forEach((item, index) => {
-        imageMap.set(index, item.image);
+    itemsWithIndices.forEach(({ item, originalIndex }) => {
+        imageMap.set(originalIndex, item.image);
     });
 
-    grid.innerHTML = items.map((item, index) => `
+    grid.innerHTML = itemsWithIndices.map(({ item, originalIndex }) => `
         <div class="clothing-item"
             draggable="true"
-            data-index="${index}"
+            data-index="${originalIndex}"
+            data-id="${item.id}"
             data-name="${item.name || ''}">
             <img src="${item.image}" draggable="false">
+            <button class="edit-color-btn" title="Edit color">&#9998;</button>
+            ${item.color ? `<div class="color-indicator ${item.color}"></div>` : ''}
         </div>
     `).join("");
 
@@ -226,6 +244,17 @@ function renderClothingGrid() {
 
             e.dataTransfer.setData("text/plain", image);
         });
+
+        // Add click handler for edit color button
+        const editBtn = el.querySelector(".edit-color-btn");
+        if (editBtn) {
+            editBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const itemId = parseInt(el.dataset.id);
+                openColorModal(itemId);
+            });
+        }
     });
 }
 
@@ -646,3 +675,246 @@ function clearAICache() {
         responseDiv.innerHTML = '<p class="ai-placeholder">Cache cleared. Enter a style prompt to get AI suggestions.</p>';
     }
 }
+
+// =========================
+// SAVED OUTFITS
+// =========================
+function loadSavedOutfits() {
+    if (!db) return;
+    if (!db.objectStoreNames.contains(OUTFITS_STORE)) return;
+
+    const tx = db.transaction(OUTFITS_STORE, "readonly");
+    const store = tx.objectStore(OUTFITS_STORE);
+
+    const req = store.getAll();
+
+    req.onsuccess = () => {
+        savedOutfits = req.result || [];
+        renderSavedOutfitsPanel();
+    };
+}
+
+function saveOutfitToDB(outfit) {
+    if (!db) return;
+    if (!db.objectStoreNames.contains(OUTFITS_STORE)) return;
+
+    const tx = db.transaction(OUTFITS_STORE, "readwrite");
+    tx.objectStore(OUTFITS_STORE).put(outfit);
+}
+
+function deleteOutfitFromDB(outfitId) {
+    if (!db) return;
+    const tx = db.transaction(OUTFITS_STORE, "readwrite");
+    tx.objectStore(OUTFITS_STORE).delete(outfitId);
+}
+
+function openSaveOutfitModal() {
+    if (canvasItems.length === 0) {
+        alert("Add some items to the canvas before saving an outfit.");
+        return;
+    }
+
+    const modal = document.getElementById("save-outfit-modal");
+    const input = document.getElementById("outfit-name-input");
+    input.value = "";
+    modal.classList.add("active");
+    input.focus();
+}
+
+function closeSaveOutfitModal() {
+    const modal = document.getElementById("save-outfit-modal");
+    modal.classList.remove("active");
+}
+
+function saveCurrentOutfit() {
+    const input = document.getElementById("outfit-name-input");
+    if (!input) return;
+
+    const name = input.value.trim();
+
+    if (!name) {
+        alert("Please enter a name for your outfit.");
+        input.focus();
+        return;
+    }
+
+    if (canvasItems.length === 0) {
+        alert("No items on canvas to save.");
+        closeSaveOutfitModal();
+        return;
+    }
+
+    const outfit = {
+        id: Date.now(),
+        name: name,
+        date: new Date().toLocaleDateString(),
+        items: JSON.parse(JSON.stringify(canvasItems)) // Deep copy
+    };
+
+    savedOutfits.push(outfit);
+    saveOutfitToDB(outfit);
+    renderSavedOutfitsPanel();
+    closeSaveOutfitModal();
+}
+
+function toggleSavedOutfitsPanel() {
+    const panel = document.getElementById("saved-outfits-panel");
+    panel.classList.toggle("active");
+}
+
+function renderSavedOutfitsPanel() {
+    const grid = document.getElementById("saved-outfits-grid");
+    if (!grid) return;
+
+    if (savedOutfits.length === 0) {
+        grid.innerHTML = '<div class="no-outfits-message">No saved outfits yet.<br>Create an outfit and click "Save Outfit"!</div>';
+        return;
+    }
+
+    // Sort by most recent first
+    const sortedOutfits = [...savedOutfits].sort((a, b) => b.id - a.id);
+
+    grid.innerHTML = sortedOutfits.map(outfit => `
+        <div class="saved-outfit-card" data-id="${outfit.id}">
+            <div class="saved-outfit-info">
+                <span class="saved-outfit-name">${escapeHtml(outfit.name)}</span>
+                <span class="saved-outfit-date">${outfit.date}</span>
+            </div>
+            <div class="saved-outfit-preview">
+                ${outfit.items.slice(0, 5).map(item =>
+                    `<img src="${item.image}" alt="Item">`
+                ).join("")}
+                ${outfit.items.length > 5 ? `<span style="font-size:12px;color:#9ca3af;">+${outfit.items.length - 5}</span>` : ""}
+            </div>
+            <div class="saved-outfit-actions">
+                <button class="outfit-load-btn" onclick="loadOutfit(${outfit.id})">Load</button>
+                <button class="outfit-delete-btn" onclick="deleteOutfit(${outfit.id}, event)">Delete</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+function loadOutfit(outfitId) {
+    const outfit = savedOutfits.find(o => o.id === outfitId);
+    if (!outfit) return;
+
+    // Clear current canvas
+    if (db) {
+        const tx = db.transaction(CANVAS_STORE, "readwrite");
+        tx.objectStore(CANVAS_STORE).clear();
+    }
+
+    // Load outfit items with new UIDs to avoid conflicts
+    canvasItems = outfit.items.map(item => ({
+        ...item,
+        uid: crypto.randomUUID()
+    }));
+
+    // Save to DB
+    canvasItems.forEach(item => saveCanvasItem(item));
+
+    selectedItem = null;
+    renderCanvas();
+    toggleSavedOutfitsPanel();
+}
+
+function deleteOutfit(outfitId, event) {
+    event.stopPropagation();
+
+    if (!confirm("Delete this outfit?")) return;
+
+    savedOutfits = savedOutfits.filter(o => o.id !== outfitId);
+    deleteOutfitFromDB(outfitId);
+    renderSavedOutfitsPanel();
+}
+
+// =========================
+// COLOR MODAL
+// =========================
+function openColorModal(itemId) {
+    editingItemId = itemId;
+    const modal = document.getElementById("color-modal");
+
+    // Find the current item and its color
+    const item = findItemById(itemId);
+    const currentColor = item?.color || "";
+
+    // Update selected state in modal
+    modal.querySelectorAll(".modal-color-option").forEach(option => {
+        const optionColor = option.dataset.color;
+        if (optionColor === currentColor) {
+            option.classList.add("selected");
+        } else {
+            option.classList.remove("selected");
+        }
+    });
+
+    modal.classList.add("active");
+
+    // Setup click handlers for color options
+    modal.querySelectorAll(".modal-color-option").forEach(option => {
+        option.onclick = () => selectColor(option.dataset.color);
+    });
+}
+
+function closeColorModal() {
+    const modal = document.getElementById("color-modal");
+    modal.classList.remove("active");
+    editingItemId = null;
+}
+
+function selectColor(color) {
+    if (editingItemId === null) return;
+
+    // Find and update the item
+    const item = findItemById(editingItemId);
+    if (item) {
+        item.color = color || null; // Store null if empty string
+        saveClothing();
+        renderClothingGrid();
+    }
+
+    closeColorModal();
+}
+
+function findItemById(itemId) {
+    for (const category of Object.keys(clothingData)) {
+        const item = clothingData[category].find(i => i.id === itemId);
+        if (item) return item;
+    }
+    return null;
+}
+
+// Close modals when clicking outside
+document.addEventListener("click", (e) => {
+    const colorModal = document.getElementById("color-modal");
+    const saveModal = document.getElementById("save-outfit-modal");
+
+    if (e.target === colorModal) {
+        closeColorModal();
+    }
+    if (e.target === saveModal) {
+        closeSaveOutfitModal();
+    }
+});
+
+// Close modals on Escape key
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        closeColorModal();
+        closeSaveOutfitModal();
+
+        const panel = document.getElementById("saved-outfits-panel");
+        if (panel && panel.classList.contains("active")) {
+            panel.classList.remove("active");
+        }
+    }
+});
+
+// Enter key to save outfit in modal
+document.addEventListener("keydown", (e) => {
+    const saveModal = document.getElementById("save-outfit-modal");
+    if (e.key === "Enter" && saveModal && saveModal.classList.contains("active")) {
+        saveCurrentOutfit();
+    }
+});

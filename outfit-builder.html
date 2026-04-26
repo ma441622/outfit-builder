@@ -37,7 +37,22 @@
                 </div>
             </div>
 
-            <button class="clear-canvas-btn" onclick="clearCanvas()">Clear Canvas</button>
+            <div class="canvas-actions">
+                <button class="save-outfit-btn" onclick="openSaveOutfitModal()">Save Outfit</button>
+                <button class="view-outfits-btn" onclick="toggleSavedOutfitsPanel()">My Outfits</button>
+                <button class="clear-canvas-btn" onclick="clearCanvas()">Clear Canvas</button>
+            </div>
+
+            <!-- Saved Outfits Panel -->
+            <div id="saved-outfits-panel" class="saved-outfits-panel">
+                <div class="saved-outfits-header">
+                    <h3>Saved Outfits</h3>
+                    <button class="close-panel-btn" onclick="toggleSavedOutfitsPanel()">&times;</button>
+                </div>
+                <div class="saved-outfits-grid" id="saved-outfits-grid">
+                    <!-- Saved outfits will be populated here -->
+                </div>
+            </div>
         </div>
 
         <!-- Right Clothing Panel -->
@@ -89,6 +104,14 @@
                         <div class="swatch white"></div>
                         <span>White</span>
                     </div>
+                    <div class="color-swatch" data-color="silver">
+                        <div class="swatch silver"></div>
+                        <span>Silver</span>
+                    </div>
+                    <div class="color-swatch" data-color="gold">
+                        <div class="swatch gold"></div>
+                        <span>Gold</span>
+                    </div>
                 </div>
             </div>
 
@@ -130,6 +153,83 @@
     </div>
 
     <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload(event)">
+
+    <!-- Save Outfit Modal -->
+    <div id="save-outfit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Save Outfit</h3>
+                <button class="modal-close" onclick="closeSaveOutfitModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="outfit-name-input">Outfit Name:</label>
+                <input type="text" id="outfit-name-input" placeholder="e.g. Summer Casual" maxlength="50">
+                <div class="modal-actions">
+                    <button type="button" class="modal-cancel-btn" onclick="closeSaveOutfitModal()">Cancel</button>
+                    <button type="button" class="modal-save-btn" onclick="saveCurrentOutfit()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Color Edit Modal -->
+    <div id="color-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Color</h3>
+                <button class="modal-close" onclick="closeColorModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Select a color for this item:</p>
+                <div class="modal-color-grid">
+                    <div class="modal-color-option" data-color="">
+                        <div class="modal-swatch none"></div>
+                        <span>None</span>
+                    </div>
+                    <div class="modal-color-option" data-color="red">
+                        <div class="modal-swatch red"></div>
+                        <span>Red</span>
+                    </div>
+                    <div class="modal-color-option" data-color="pink">
+                        <div class="modal-swatch pink"></div>
+                        <span>Pink</span>
+                    </div>
+                    <div class="modal-color-option" data-color="blue">
+                        <div class="modal-swatch blue"></div>
+                        <span>Blue</span>
+                    </div>
+                    <div class="modal-color-option" data-color="green">
+                        <div class="modal-swatch green"></div>
+                        <span>Green</span>
+                    </div>
+                    <div class="modal-color-option" data-color="yellow">
+                        <div class="modal-swatch yellow"></div>
+                        <span>Yellow</span>
+                    </div>
+                    <div class="modal-color-option" data-color="purple">
+                        <div class="modal-swatch purple"></div>
+                        <span>Purple</span>
+                    </div>
+                    <div class="modal-color-option" data-color="black">
+                        <div class="modal-swatch black"></div>
+                        <span>Black</span>
+                    </div>
+                    <div class="modal-color-option" data-color="white">
+                        <div class="modal-swatch white"></div>
+                        <span>White</span>
+                    </div>
+                    <div class="modal-color-option" data-color="silver">
+                        <div class="modal-swatch silver"></div>
+                        <span>Silver</span>
+                    </div>
+                    <div class="modal-color-option" data-color="gold">
+                        <div class="modal-swatch gold"></div>
+                        <span>Gold</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="outfit-builder.js"></script>
 </body>
