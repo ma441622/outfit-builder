@@ -30,33 +30,36 @@ Responses are cached for quick access to previous suggestions.
 
 ## Technologies Used
 
-Frontend                                                          HTML5
+**Frontend**                                                          
+*HTML5*
   The application structure is built with semantic HTML, including modals, panels, and interactive elements.
 
-CSS3
+*CSS3*
   Custom styling using modern CSS features including:
   - Flexbox and Grid for layouts
   - CSS gradients and animations
   - Transitions for interactive feedback
   - Responsive design principles
 
-Vanilla JavaScript
+*Vanilla JavaScript*
   All interactivity is handled with plain JavaScript (no frameworks), including:
   - DOM manipulation
   - Event handling for drag-and-drop
   - Canvas item transformations (resize, rotate, position)
   - Modal and panel management
 
-Google Fonts
+*Google Fonts*
   The Inter font family is loaded externally for typography.
 
-Data Storage
+*Data Storage*
  IndexedDB
-  A browser-based NoSQL database used to persist:                                                        - Uploaded clothing items (stored as base64 image data)
+  A browser-based NoSQL database used to persist:    
+  - Uploaded clothing items (stored as base64 image data)
   - Canvas state (item positions, sizes, rotations)
   - Saved outfits
 
-LocalStorage                                                        Used to cache AI style assistant responses for quick retrieval.
+*LocalStorage*                                                        
+Used to cache AI style assistant responses for quick retrieval.
 
 # Outfit Builder AI Feature
 
